@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 dotenv.config();
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import path from "path";
 // routes imports
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
@@ -15,6 +16,7 @@ import { app, server } from "./socket/socket.js";
 // const app = express();
 const port = process.env.PORT || 8000;
 
+const __dirname = path.resolve();
 // middlewares
 app.use(express.json());
 app.use(cookieParser());
@@ -27,6 +29,12 @@ app.get("/api/test", protectRoute, (req, res) => {
   res.json({ msg: req.user });
 });
 app.use(errorHandler);
+
+app.use(express.static(path.join(__dirname, "/frontend/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
+});
 
 const start = async () => {
   try {
